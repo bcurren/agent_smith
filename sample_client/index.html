@@ -1,0 +1,27 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+  "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4/jquery.min.js"></script>
+  <script src="as.event.js"></script>
+</head>
+<body>
+  Hello World
+<script>
+  var events = new AS.Event("http://localhost:8000")
+  
+  var event = {
+    user_id: 5,
+    object: "user",
+    action: "created",
+    user_type: "company"
+  };
+  event.u = document.location.href;
+  if(document.referrer && document.referrer != "") {
+    event.ref = document.referrer;
+  }
+  
+  events.track(event);
+</script>
+</body>
+</html>
