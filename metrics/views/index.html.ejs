@@ -1,0 +1,32 @@
+<div id="simplechart" style="width: 800px; height: 500px;"></div>
+<div id="legend1"></div>
+
+<script type="text/javascript" charset="utf-8">
+  dojo.require("outright.Application");
+  var application = new outright.Application(false);
+  
+  dojo.require("outright.charting.Chart2D");
+  dojo.require("dijit.Dialog"); 
+
+  dojo.addOnLoad(function() { 
+    dojo.xhrGet({
+      url: "/<%= report %>",
+      handleAs: "json",
+      load: function(data) {
+        new outright.charting.Chart2D("simplechart", "legend1", data, [{
+          plot: "users",
+          type: "Lines",
+          seriesIndex: 0
+        }]);
+      },
+      error: function(error) {
+        var dialog = new dijit.Dialog({
+          title: "Error loading report data",
+          content: error.message,
+          style: "width: 450px"
+        });
+        dialog.show();
+      }
+    });
+  });
+</script>

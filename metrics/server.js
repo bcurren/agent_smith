@@ -39,14 +39,20 @@ db.open(function(p_db) {
 
   });
 
+  get('/', function(){
+    this.contentType('html');
+    this.render('index.html.ejs', {
+      locals: {
+        report: this.param("report_name")
+      }
+    });
+  });
+
   get('/:report_name', function(){
-    var hard_coded_start_date = new Date();
-    hard_coded_start_date.setDate(hard_coded_start_date.getDate() - 30);
-    
     var mc = require(this.param('report_name'));
     var metric = new mc.Metric;
-    this.contentType('html')
-    return "report_name: " + metric.chartData(hard_coded_start_date) + "!"
+    this.contentType('application/json');
+    return JSON.encode(metric.chartData());
   });
 
   run();
