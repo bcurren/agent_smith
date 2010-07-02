@@ -1,4 +1,5 @@
 require.paths.unshift(__dirname + '/lib');
+require.paths.unshift(__dirname + '/lib/metrics');
 require.paths.unshift(__dirname);
 require.paths.unshift(__dirname + '/deps/express/lib')
 
@@ -39,8 +40,13 @@ db.open(function(p_db) {
   });
 
   get('/:report_name', function(){
+    var hard_coded_start_date = new Date();
+    hard_coded_start_date.setDate(hard_coded_start_date.getDate() - 30);
+    
+    var mc = require(this.param('report_name'));
+    var metric = new mc.Metric;
     this.contentType('html')
-    return "report_name: " + this.param('report_name') + "!"
+    return "report_name: " + metric.chartData(hard_coded_start_date) + "!"
   });
 
   run();
