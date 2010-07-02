@@ -20,7 +20,7 @@ AgentSmith.prototype = {
   
   serveRequest: function(req, res) {
     this.writePixel(res);
-
+    sys.puts(req.url);
     var env = this.splitQuery(req.url.split('?')[1]);
     env.timestamp = new Date();
     this.collection.insertAll([env]);
