@@ -8,38 +8,22 @@ var ie = new InitialEngagement
 
 
 var self = this;
-exports['test myfunc'] = function(assert, beforeExit){  
-  var results  
-  __runSuite(function(){
-    ie.chartData("2010-01-01", function(txns) {
-      results = txns
-    })      
+exports['chartData'] = function(assert, beforeExit){  
+  var testGroupResults  
+  db.open(function(p_db){
+    __setup()    
+    ie.chartData(function(txns) {
+      testGroupResults = txns
+    })
+    __teardown()
+
+    db.close()
   })  
   beforeExit(function(){        
-    assert.equal(3, results.length);
+    assert.equal(1, testGroupResults[0].count, 'unexpected value for testGroupResults: ' + sys.inspect(testGroupResults))
+    assert.equal(0, testGroupResults[1].count, 'unexpected value for testGroupResults: ' + sys.inspect(testGroupResults))  
   });  
 }
-
-
-exports['test group'] = function(assert, beforeExit){
-  var bar
-  __runSuite(function(){
-    bar = 'hell yeah'
-  })
-  beforeExit(function(){
-    assert.equal(3, bar)
-  })  
-}
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -50,14 +34,6 @@ exports['test group'] = function(assert, beforeExit){
 
 
 // PRIVATE
-var __runSuite = function(callback){ 
-  db.open(function(p_db){
-    __setup()
-    callback.call()
-    __teardown()
-    db.close()
-  })
-}
 
 var __setup = function(){  
   db.collection('events', function(err, collection){
@@ -87,9 +63,9 @@ var non_ie_txn = {
   "event_name" : "created" , 
   "manual" : "true" , 
   "subject_type" : "Txn" , 
-  "subject_id" : "1955276501" , 
+  "subject_id" : "1955276502" , 
   "user_created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" , 
-  "user_id" : "2084271013" , 
+  "user_id" : "2084271014" , 
   "created_at" : "Wed, 10 Jul 2010 14:04:16 -0700" , 
   "timestamp" : "Tue Jul 06 2010 14:06:22 GMT-0700 (PDT)"
 }
