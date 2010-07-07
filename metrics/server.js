@@ -11,7 +11,7 @@ var sys = require('sys'),
 require('express');
 require('express/plugins');
 
-db = new mongo.Db('hummingbird', new mongo.Server('localhost', 27017, {}), {});
+db = new mongo.Db('agent_smith', new mongo.Server('localhost', 27017, {}), {});
 
 db.open(function(p_db) {
   configure(function(){
