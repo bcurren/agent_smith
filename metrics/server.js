@@ -11,6 +11,7 @@ var sys = require('sys'),
 require('express');
 require('express/plugins');
 
+
 db = new mongo.Db('agent_smith', new mongo.Server('localhost', 27017, {}), {});
 
 db.open(function(p_db) {
@@ -52,7 +53,10 @@ db.open(function(p_db) {
     var mc = require(this.param('report_name'));
     var metric = new mc.Metric;
     this.contentType('application/json');
-    return JSON.encode(metric.chartData());
+    var self = this;
+    metric.chartData(function(response){
+      self.respond(200, JSON.encode(response));
+    })
   });
 
   run();
