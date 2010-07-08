@@ -34,24 +34,21 @@ InitialEngagement.prototype.__reduce = function(obj, prev){
 }
 
 
-InitialEngagement.prototype.__finalize = function(records){
-  result = []
-  intermediate = {}
-  for (var i = 0, len = records.length; i < len; ++i){
-    rawDate = new Date(records[i].date)
-    fmtDate = (rawDate.getMonth() + 1) + "/" + rawDate.getDate() + "/" + rawDate.getFullYear()
-    if (intermediate[fmtDate] == null) {
-      intermediate[fmtDate] = records[i].count
-    } else {
-      intermediate[fmtDate] = intermediate[fmtDate] + records[i].count
-    }
-  }
-  
-  for (var key in intermediate) {
-    result.push({'date': key, 'count': intermediate[key]})
-  }  
-  
-  var sortedResult = result.sort(function(a, b){
+InitialEngagement.prototype.__finalize = function(records){  
+  var hshGroupedDates = {}
+
+  __groupCountsByDate(records, hshGroupedDates)
+
+  return __sortArrayByDate(__buildArray(hshGroupedDates))
+}
+
+
+var __formattedDate = function(date){
+  return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+}
+
+var __sortArrayByDate = function(result){
+  return result.sort(function(a, b){
     dateA = new Date(a.date)
     dateB = new Date(b.date)
     if (dateA == dateB) {
@@ -62,12 +59,25 @@ InitialEngagement.prototype.__finalize = function(records){
       return 1
     }
   })
-
-  return sortedResult
 }
 
+var __groupCountsByDate = function(records, hshGroupedDates){
+  for (var i = 0, len = records.length; i < len; ++i){
+    fmtDate = __formattedDate(new Date(records[i].date))
+    if (hshGroupedDates[fmtDate] == null) {
+      hshGroupedDates[fmtDate] = records[i].count
+    } else {
+      hshGroupedDates[fmtDate] = hshGroupedDates[fmtDate] + records[i].count
+    }
+  }
+}
 
-
-
+var __buildArray = function(hshGroupedDates) {
+  var result = []
+  for (var key in hshGroupedDates) {
+    result.push([key, hshGroupedDates[key]])
+  }  
+  return result  
+}
 
 exports.Metric = InitialEngagement;
