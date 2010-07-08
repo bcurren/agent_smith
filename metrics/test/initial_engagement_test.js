@@ -9,14 +9,14 @@ var ie = new InitialEngagement
 
 var self = this;
 exports['chartData'] = function(assert, beforeExit){  
-  var chartDataResponse  
+  var chartDataResponse, finalizeResponse  
   db.open(function(p_db){
     __setup()    
     ie.chartData(function(txns) { chartDataResponse = txns })
     __teardown()
     db.close()
-  })  
-  beforeExit(function(){        
+  })    
+  beforeExit(function(){            
     hashedChartDataResponse = {}
     for (var i = 0, len = chartDataResponse.length; i < len; ++i){
       thisElement = chartDataResponse[i]
