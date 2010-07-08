@@ -8,7 +8,7 @@ InitialEngagement.prototype.chartData = function(callback) {
   db.collection('events', function(err, collection){    
     collection.group(
       ["user_id"], 
-      {}, 
+      {"manual": 'true', "subject_type": 'Txn', "event_name": 'created'}, 
       {"date": "", "count":0, "txn_created": "", "days": ""}, 
       InitialEngagement.prototype.__reduce, 
       function(err, results) {
