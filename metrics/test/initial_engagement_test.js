@@ -14,16 +14,17 @@ exports['chartData'] = function(assert, beforeExit){
     __setup()    
     
     //first test
-    ie.chartData(function(txns) { chartDataResponse = txns })  
+    ie.chartData(function(txns) { 
+      chartDataResponse = txns.series[0].data 
+    })  
 
-    
-    
+  
     __teardown()
     db.close()
   })    
   beforeExit(function(){            
     var hashedChartDataResponse = __responseHashedByDate(chartDataResponse)
-    assert.equal(1, hashedChartDataResponse['7/5/2010'], 'unexpected count for: 7/5/2010: ' + hashedChartDataResponse['7/5/2010'] )
+    assert.equal(1, hashedChartDataResponse['2010-7-5'], 'unexpected count for: 2010-7-5: ' + hashedChartDataResponse['2010-7-5'] )
   });  
 }
 
@@ -54,7 +55,7 @@ var __responseHashedByDate = function(response){
   result = {}
   for (var i = 0, len = response.length; i < len; ++i){
     thisElement = response[i]
-    result[thisElement.date] = thisElement.count
+    result[thisElement[0]] = thisElement[1]
   }  
   return result
 }

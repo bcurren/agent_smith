@@ -33,13 +33,12 @@ InitialEngagement.prototype.__reduce = function(obj, prev){
     prev.count = 1;
 }
 
-
 InitialEngagement.prototype.__finalize = function(records){  
   var hshGroupedDates = {}
 
   __groupCountsByDate(records, hshGroupedDates)
 
-  return __sortArrayByDate(__buildArray(hshGroupedDates))
+  return __wellKnownStructure(__dataNode(hshGroupedDates))
 }
 
 
@@ -49,8 +48,8 @@ var __formattedDate = function(date){
 
 var __sortArrayByDate = function(result){
   return result.sort(function(a, b){
-    dateA = new Date(a.date)
-    dateB = new Date(b.date)
+    dateA = new Date(a[0])
+    dateB = new Date(b[0])
     if (dateA == dateB) {
       return 0
     } else if (dateA < dateB) {
@@ -79,5 +78,26 @@ var __buildArray = function(hshGroupedDates) {
   }  
   return result  
 }
+
+var __dataNode = function(data){
+  return __sortArrayByDate(__buildArray(data))
+}
+
+var __wellKnownStructure = function(dataNode){
+  return {
+    startDate: dataNode[0][0],
+    endDate: dataNode[dataNode.length-1][0],
+    viewBy: "day",
+    series: [{
+      name: "Manual Txns",
+      data: dataNode
+    }]
+  }
+  
+  
+  
+  
+}
+
 
 exports.Metric = InitialEngagement;

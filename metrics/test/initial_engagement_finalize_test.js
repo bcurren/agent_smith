@@ -17,8 +17,12 @@ var __expected_group_result = [
 ]
 
 
-var __expected_finalize_result = [ 
-  { date: '7/4/2010', count: 0 },
-  { date: '7/5/2010', count: 2 }
-  
-]
+var __expected_finalize_result = {
+  startDate: "2010-7-4",
+  endDate: "2010-7-5",
+  viewBy: "day",
+  series: [{
+    name: "Manual Txns",
+    data: [["2010-7-4", 0], ["2010-7-5", 2]]
+  }]
+}
