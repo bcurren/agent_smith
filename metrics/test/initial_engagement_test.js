@@ -20,10 +20,9 @@ exports['chartData'] = function(assert, beforeExit){
     hashedChartDataResponse = {}
     for (var i = 0, len = chartDataResponse.length; i < len; ++i){
       thisElement = chartDataResponse[i]
-      hashedChartDataResponse[thisElement.user_id] = thisElement.count
+      hashedChartDataResponse[thisElement.date] = thisElement.count
     }
-    assert.equal(1, hashedChartDataResponse['2084271013'], 'unexpected count for user_id: 2084271013: ' + hashedChartDataResponse['2084271013'] )
-    assert.equal(0, hashedChartDataResponse['2084271014'], 'unexpected count for user_id: 2084271014: ' + hashedChartDataResponse['2084271014'] )
+    assert.equal(1, hashedChartDataResponse['7/5/2010'], 'unexpected count for: 7/5/2010: ' + hashedChartDataResponse['7/5/2010'] )
   });  
 }
 
