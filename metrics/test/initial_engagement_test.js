@@ -9,19 +9,21 @@ var ie = new InitialEngagement
 
 var self = this;
 exports['chartData'] = function(assert, beforeExit){  
-  var testGroupResults  
+  var chartDataResponse  
   db.open(function(p_db){
     __setup()    
-    ie.chartData(function(txns) {
-      testGroupResults = txns
-    })
+    ie.chartData(function(txns) { chartDataResponse = txns })
     __teardown()
-
     db.close()
   })  
   beforeExit(function(){        
-    assert.equal(1, testGroupResults[0].count, 'unexpected value for testGroupResults: ' + sys.inspect(testGroupResults))
-    assert.equal(0, testGroupResults[1].count, 'unexpected value for testGroupResults: ' + sys.inspect(testGroupResults))  
+    hashedChartDataResponse = {}
+    for (var i = 0, len = chartDataResponse.length; i < len; ++i){
+      thisElement = chartDataResponse[i]
+      hashedChartDataResponse[thisElement.user_id] = thisElement.count
+    }
+    assert.equal(1, hashedChartDataResponse['2084271013'], 'unexpected count for user_id: 2084271013: ' + hashedChartDataResponse['2084271013'] )
+    assert.equal(0, hashedChartDataResponse['2084271014'], 'unexpected count for user_id: 2084271014: ' + hashedChartDataResponse['2084271014'] )
   });  
 }
 
@@ -46,7 +48,6 @@ var __teardown = function(){
     collection.remove(function(err, collection){})      
   })      
 }
-
 
 var ie_txn = {
   "event_name" : "created" , 
