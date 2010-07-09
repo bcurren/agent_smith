@@ -5,10 +5,11 @@ InitialEngagement = function() {};
 InitialEngagement.prototype = new bm.BaseMetric;
 InitialEngagement.prototype.constructor = InitialEngagement;
 InitialEngagement.prototype.chartData = function(callback) {
+  var thirty_days_ago_in_millis = new Date().getTime() - 30 * 24 * 60 * 60 * 1000
   db.collection('events', function(err, collection){    
     collection.group(
       ["user_id"], 
-      {"manual": 'true', "subject_type": 'Txn', "event_name": 'created'}, 
+      {"manual": 'true', "subject_type": 'Txn', "event_name": 'created', 'user_created_at_in_millis': {'$gte': thirty_days_ago_in_millis}}, 
       {"date": "", "count":0, "txn_created": "", "days": ""}, 
       InitialEngagement.prototype.__reduce, 
       function(err, results) {

@@ -25,6 +25,7 @@ exports['chartData'] = function(assert, beforeExit){
   beforeExit(function(){            
     var hashedChartDataResponse = __responseHashedByDate(chartDataResponse)
     assert.equal(1, hashedChartDataResponse['2010-7-5'], 'unexpected count for: 2010-7-5: ' + hashedChartDataResponse['2010-7-5'] )
+    assert.equal(undefined, hashedChartDataResponse['2009-7-5'], 'unexpected count for: 2009-7-5: ' + hashedChartDataResponse['2009-7-5'] )    
   });  
 }
 
@@ -40,7 +41,7 @@ exports['chartData'] = function(assert, beforeExit){
 
 var __setup = function(){  
   db.collection('events', function(err, collection){
-    collection.insert([ie_txn, non_ie_txn, imported_txn, non_txn], function(err, ids){})      
+    collection.insert([ie_txn, non_ie_txn, imported_txn, non_txn, out_of_range_txn], function(err, ids){})      
   })  
 }
 
@@ -67,7 +68,8 @@ var ie_txn = {
   "manual" : "true" , 
   "subject_type" : "Txn" , 
   "subject_id" : "1955276501" , 
-  "user_created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" , 
+  "user_created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" ,
+  "user_created_at_in_millis" : new Date("Mon, 05 Jul 2010 14:04:16 -0700").getTime() ,    
   "user_id" : "2084271013" , 
   "created_at" : "Wed, 07 Jul 2010 14:04:16 -0700" , 
   "timestamp" : "Tue Jul 06 2010 14:06:22 GMT-0700 (PDT)"
@@ -79,6 +81,7 @@ var non_ie_txn = {
   "subject_type" : "Txn" , 
   "subject_id" : "1955276502" , 
   "user_created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" , 
+  "user_created_at_in_millis" : new Date("Mon, 05 Jul 2010 14:04:16 -0700").getTime() ,      
   "user_id" : "2084271014" , 
   "created_at" : "Wed, 10 Jul 2010 14:04:16 -0700" , 
   "timestamp" : "Tue Jul 06 2010 14:06:22 GMT-0700 (PDT)"
@@ -90,6 +93,7 @@ var imported_txn = {
   "subject_type" : "Txn" , 
   "subject_id" : "1955276502" , 
   "user_created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" , 
+  "user_created_at_in_millis" : new Date("Mon, 05 Jul 2010 14:04:16 -0700").getTime() ,      
   "user_id" : "2084271014" , 
   "created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" , 
   "timestamp" : "Tue Jul 06 2010 14:06:22 GMT-0700 (PDT)"
@@ -103,12 +107,23 @@ var non_txn = {
   "subject_id" : "2" , 
   "user_id" : "2" , 
   "user_created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" ,   
+  "user_created_at_in_millis" : new Date("Mon, 05 Jul 2010 14:04:16 -0700").getTime() ,      
   "created_at" : "Mon, 05 Jul 2010 14:04:16 -0700" , 
   "timestamp" : "Tue Jul 06 2010 14:06:22 GMT-0700 (PDT)"
 }
 
 
-
+var out_of_range_txn = {
+  "event_name" : "created" , 
+  "manual" : "true" , 
+  "subject_type" : "Txn" , 
+  "subject_id" : "1955276501" , 
+  "user_created_at" : "Sun, 05 Jul 2009 14:04:16 -0700" , 
+  "user_created_at_in_millis" : new Date("Sun, 05 Jul 2009 14:04:16 -0700").getTime() ,      
+  "user_id" : "2084271011" , 
+  "created_at" : "Tue, 07 Jul 2009 14:04:16 -0700" , 
+  "timestamp" : "Wed Jul 07 2009 14:06:22 GMT-0700 (PDT)"
+}
 
 
 

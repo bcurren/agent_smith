@@ -23,6 +23,7 @@ AgentSmith.prototype = {
     sys.puts(req.url);
     var env = this.splitQuery(req.url.split('?')[1]);
     env.timestamp = new Date();
+    env.user_created_at_in_millis = new Date(env.user_created_at).getTime()
     this.collection.insertAll([env]);
   },
   
