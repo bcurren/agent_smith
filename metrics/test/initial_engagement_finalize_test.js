@@ -1,5 +1,4 @@
-sys = require('sys')
-InitialEngagement = require('../lib/metrics/initial_engagement').Metric
+testHelper = require('./test_helper')
 var ie = new InitialEngagement
 module.exports = {    
   
