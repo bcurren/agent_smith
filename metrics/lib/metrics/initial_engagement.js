@@ -5,6 +5,15 @@ InitialEngagement = function() {};
 InitialEngagement.prototype = new bm.BaseMetric;
 InitialEngagement.prototype.constructor = InitialEngagement;
 InitialEngagement.prototype.chartData = function(callback) {
+  process.addListener('manualGroupDone', function(manualTxnData){
+    process.emit('afterManualGroupDone')
+    callback(manualTxnData)
+  })
+  __chartManualTxnData()
+}
+
+
+function __chartManualTxnData(callback){
   var thirty_days_ago_in_millis = new Date().getTime() - 30 * 24 * 60 * 60 * 1000
   db.collection('events', function(err, collection){    
     collection.group(
@@ -13,14 +22,12 @@ InitialEngagement.prototype.chartData = function(callback) {
       {"date": "", "count":0, "txn_created": "", "days": ""}, 
       __reduce, 
       function(err, results) {
-        callback(__finalize(results))
+        process.emit('manualGroupDone', __finalize(results))
       }
     );
   })
-
-
+  
 }
-
 
 
 function __reduce(obj, prev){
@@ -41,7 +48,6 @@ function __finalize(records){
 
   return __wellKnownStructure(__dataNode(hshGroupedDates))
 }
-
 
 function __formattedDate(date){
   return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
