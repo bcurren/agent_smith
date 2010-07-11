@@ -14,11 +14,10 @@ InitialEngagement.prototype.chartData = function(callback) {
 
 
 function __chartManualTxnData(callback){
-  var thirty_days_ago_in_millis = new Date().getTime() - 30 * 24 * 60 * 60 * 1000
   db.collection('events', function(err, collection){    
     collection.group(
       ["user_id"], 
-      {"manual": 'true', "subject_type": 'Txn', "event_name": 'created', 'user_created_at_in_millis': {'$gte': thirty_days_ago_in_millis}}, 
+      __manualTxnConditions(), 
       {"date": "", "count":0, "txn_created": "", "days": ""}, 
       __reduce, 
       function(err, results) {
@@ -29,6 +28,15 @@ function __chartManualTxnData(callback){
   
 }
 
+
+function __manualTxnConditions(){
+  return {
+    'manual': 'true', 
+    'subject_type': 'Txn', 
+    'event_name': 'created', 
+    'user_created_at_in_millis': {'$gte': __thirtyDaysInMillis()}
+  }  
+}
 
 function __reduce(obj, prev){
   var user_created_at = obj.user_created_at
@@ -51,6 +59,10 @@ function __finalize(records){
 
 function __formattedDate(date){
   return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+}
+
+function __thirtyDaysInMillis(){
+  return new Date().getTime() - 30 * 24 * 60 * 60 * 1000
 }
 
 function __sortArrayByDate(result){
