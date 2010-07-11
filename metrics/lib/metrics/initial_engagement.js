@@ -7,25 +7,47 @@ InitialEngagement.prototype.constructor = InitialEngagement;
 InitialEngagement.prototype.chartData = function(callback) {
   process.addListener('manualGroupDone', function(manualTxnData){
     process.emit('afterManualGroupDone')
-    callback(manualTxnData)
+    process.addListener('ciGroupDone', function(ciData){
+      process.emit('afterCiGroupDone')      
+      callback(
+        __dojoChartingStructure(
+          manualTxnData,
+          ciData
+        )
+      )      
+    })
   })
   __chartManualTxnData()
+  __chartCompanyImporterData()
 }
 
 
-function __chartManualTxnData(callback){
+function __chartManualTxnData(){
   db.collection('events', function(err, collection){    
     collection.group(
       ["user_id"], 
       __manualTxnConditions(), 
-      {"date": "", "count":0, "txn_created": "", "days": ""}, 
+      __groupInitial(), 
       __reduce, 
       function(err, results) {
         process.emit('manualGroupDone', __finalize(results))
       }
     );
-  })
-  
+  })  
+}
+
+function __chartCompanyImporterData(){
+  db.collection('events', function(err, collection){    
+    collection.group(
+      ["user_id"], 
+      __companyImporterConditions(), 
+      __groupInitial(), 
+      __reduce, 
+      function(err, results) {
+        process.emit('ciGroupDone', __finalize(results))
+      }
+    );
+  })  
 }
 
 
@@ -34,8 +56,20 @@ function __manualTxnConditions(){
     'manual': 'true', 
     'subject_type': 'Txn', 
     'event_name': 'created', 
-    'user_created_at_in_millis': {'$gte': __thirtyDaysInMillis()}
+    'user_created_at_in_millis': {'$gte': __thirtyDaysAgoInMillis()}
   }  
+}
+
+function __companyImporterConditions(){
+  return {
+    'subject_type': 'CompanyImporter', 
+    'event_name': 'created', 
+    'user_created_at_in_millis': {'$gte': __thirtyDaysAgoInMillis()}
+  }  
+}
+
+function __groupInitial(){
+  return {"date": "", "count":0}
 }
 
 function __reduce(obj, prev){
@@ -49,21 +83,10 @@ function __reduce(obj, prev){
     prev.count = 1;
 }
 
-function __finalize(records){  
-  var hshGroupedDates = {}
-
-  __groupCountsByDate(records, hshGroupedDates)
-
-  return __wellKnownStructure(__dataNode(hshGroupedDates))
+function __finalize(records){
+  return __dataNode(__sumUserIdGroupsByDate(records))
 }
 
-function __formattedDate(date){
-  return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
-}
-
-function __thirtyDaysInMillis(){
-  return new Date().getTime() - 30 * 24 * 60 * 60 * 1000
-}
 
 function __sortArrayByDate(result){
   return result.sort(function(a, b){
@@ -79,15 +102,17 @@ function __sortArrayByDate(result){
   })
 }
 
-function __groupCountsByDate(records, hshGroupedDates){
-  for (var i = 0, len = records.length; i < len; ++i){
-    fmtDate = __formattedDate(new Date(records[i].date))
-    if (hshGroupedDates[fmtDate] == null) {
-      hshGroupedDates[fmtDate] = records[i].count
+function __sumUserIdGroupsByDate(results){
+  returnHash = {}
+  for (var i = 0, len = results.length; i < len; ++i){
+    fmtDate = __formattedDate(new Date(results[i].date))
+    if (returnHash[fmtDate] == null) {
+      returnHash[fmtDate] = results[i].count
     } else {
-      hshGroupedDates[fmtDate] = hshGroupedDates[fmtDate] + records[i].count
+      returnHash[fmtDate] = returnHash[fmtDate] + results[i].count
     }
   }
+  return returnHash
 }
 
 function __buildArray(hshGroupedDates) {
@@ -102,21 +127,59 @@ function __dataNode(data){
   return __sortArrayByDate(__buildArray(data))
 }
 
-function __wellKnownStructure(dataNode){
+function __dojoChartingStructure(manualTxnData, ciData){
   return {
-    startDate: dataNode[0][0],
-    endDate: dataNode[dataNode.length-1][0],
-    viewBy: "day",
-    series: [{
-      name: "Manual Txns",
-      data: dataNode
-    }]
-  }
-  
-  
-  
-  
+    startDate:  __formattedDate(__thirtyDaysAgo()),
+    endDate:    __formattedDate(__currentTime()),
+    viewBy:     "day",
+    series: [
+      { name: "Manual Txns",        data: manualTxnData },
+      { name: "Company Importers",  data: ciData        }
+    ]
+  }  
 }
+
+function __formattedDate(date){
+  return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
+}
+
+thirtyDaysAgoInMillis = null
+function __thirtyDaysAgoInMillis(){
+  if (!thirtyDaysAgoInMillis){
+    thirtyDaysAgoInMillis =  __currentTimeInMillis() - 30 * 24 * 60 * 60 * 1000
+  }
+  return thirtyDaysAgoInMillis
+}
+
+currentTimeInMillis = null
+function __currentTimeInMillis(){
+  if (!currentTimeInMillis){
+    currentTimeInMillis = __currentTime().getTime() 
+  }
+  return currentTimeInMillis
+}
+
+currentTime = null
+function __currentTime(){
+  if (!currentTime){
+    currentTime = new Date()
+  }
+  return currentTime
+}
+
+thirtyDaysAgo = null
+function __thirtyDaysAgo(){
+  if (!thirtyDaysAgo){
+    thirtyDaysAgo = new Date(__thirtyDaysAgoInMillis())
+  }
+  return thirtyDaysAgo
+}
+
+
+
+
+
+
 
 
 exports.Metric = InitialEngagement;

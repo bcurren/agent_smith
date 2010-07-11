@@ -46,8 +46,8 @@ def create_5_initial_engagement_txns
   end
 end
 
-def create_5_initial_engagement_cis
-  1.upto(5) do |i|
+def create_12_initial_engagement_cis
+  1.upto(12) do |i|
     u = factory_user(i.days.ago)
     1.upto(2) do |x|    
       factory_ci(u, (i-x).days.ago)
@@ -81,7 +81,7 @@ end
 
 
 create_5_initial_engagement_txns
-create_5_initial_engagement_cis
+create_12_initial_engagement_cis
 create_10_manual_txns_that_dont_qualify
 create_10_cis_that_dont_qualify
 create_15_imported_txns

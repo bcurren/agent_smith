@@ -13,11 +13,19 @@
       url: "/<%= report %>",
       handleAs: "json",
       load: function(data) {
-        new outright.charting.Chart2D("simplechart", "legend1", data, [{
-          plot: "users",
-          type: "Lines",
-          seriesIndex: 0
-        }]);
+        new outright.charting.Chart2D("simplechart", "legend1", data, 
+        [
+          {
+            plot: "users",
+            type: "Lines",
+            seriesIndex: 0
+          },
+          {
+            plot: "users",
+            type: "Lines",
+            seriesIndex: 1
+          }
+        ]);
       },
       error: function(error) {
         var dialog = new dijit.Dialog({
