@@ -38,8 +38,8 @@ end
 
 
 def create_initial_engagement_txns
-  1.upto(10) do |i|
-    rand(3).times do 
+  1.upto(30) do |i|
+    rand(15).times do 
       u = factory_user(i.days.ago)
       factory_txn(u, i.days.ago, true)
     end
@@ -47,8 +47,8 @@ def create_initial_engagement_txns
 end
 
 def create_initial_engagement_cis
-  1.upto(10) do |i|
-    rand(3).times do
+  1.upto(30) do |i|
+    rand(20).times do
       u = factory_user(i.days.ago)    
       factory_ci(u, i.days.ago)    
     end
