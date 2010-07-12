@@ -37,20 +37,20 @@ def factory_ci(user, created_at)
 end
 
 
-def create_5_initial_engagement_txns
-  1.upto(5) do |i|
-    u = factory_user(i.days.ago)
-    1.upto(2) do |x|    
-      factory_txn(u, (i-x).days.ago, true)
+def create_initial_engagement_txns
+  1.upto(10) do |i|
+    rand(3).times do 
+      u = factory_user(i.days.ago)
+      factory_txn(u, i.days.ago, true)
     end
   end
 end
 
-def create_12_initial_engagement_cis
-  1.upto(12) do |i|
-    u = factory_user(i.days.ago)
-    1.upto(2) do |x|    
-      factory_ci(u, (i-x).days.ago)
+def create_initial_engagement_cis
+  1.upto(10) do |i|
+    rand(3).times do
+      u = factory_user(i.days.ago)    
+      factory_ci(u, i.days.ago)    
     end
   end
 end
@@ -80,8 +80,8 @@ def create_15_imported_txns
 end
 
 
-create_5_initial_engagement_txns
-create_12_initial_engagement_cis
+create_initial_engagement_txns
+create_initial_engagement_cis
 create_10_manual_txns_that_dont_qualify
 create_10_cis_that_dont_qualify
 create_15_imported_txns

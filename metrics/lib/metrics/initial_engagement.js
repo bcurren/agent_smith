@@ -50,7 +50,6 @@ function __chartCompanyImporterData(){
   })  
 }
 
-
 function __manualTxnConditions(){
   return {
     'manual': 'true', 
@@ -86,7 +85,6 @@ function __reduce(obj, prev){
 function __finalize(records){
   return __dataNode(__sumUserIdGroupsByDate(records))
 }
-
 
 function __sortArrayByDate(result){
   return result.sort(function(a, b){
