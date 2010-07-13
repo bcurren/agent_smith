@@ -5,24 +5,30 @@ InitialEngagement = function() {};
 InitialEngagement.prototype = new bm.BaseMetric;
 InitialEngagement.prototype.constructor = InitialEngagement;
 InitialEngagement.prototype.chartData = function(callback) {
+  var manTxnResults, ciResults
   process.addListener('manualGroupDone', function(manualTxnData){
-    process.emit('afterManualGroupDone')
-    process.addListener('ciGroupDone', function(ciData){
-      process.emit('afterCiGroupDone')      
-      callback(
-        __dojoChartingStructure(
-          manualTxnData,
-          ciData
-        )
-      )      
-    })
+    manTxnResults = manualTxnData
+    __chartCompanyImporterData()
+  })
+  process.addListener('ciGroupDone', function(ciData){      
+    ciResults = ciData    
+    __chartUserData()
+  })  
+  process.addListener('chartUsersDone', function(userData){
+    callback(
+      __dojoChartingStructure(
+        manTxnResults,
+        ciResults,
+        userData
+      )
+    )
   })
   __chartManualTxnData()
-  __chartCompanyImporterData()
+  
 }
 
 
-function __chartManualTxnData(){
+function __chartManualTxnData(){  
   db.collection('events', function(err, collection){    
     collection.group(
       ["user_id"], 
@@ -36,7 +42,7 @@ function __chartManualTxnData(){
   })  
 }
 
-function __chartCompanyImporterData(){
+function __chartCompanyImporterData(){  
   db.collection('events', function(err, collection){    
     collection.group(
       ["user_id"], 
@@ -49,6 +55,23 @@ function __chartCompanyImporterData(){
     );
   })  
 }
+
+function __chartUserData(){
+  db.collection('events', function(err, collection){    
+    collection.group(
+      ["user_id"], 
+      {'subject_type': 'User', 'event_name': 'created', 'user_created_at_in_millis': {'$gte': __thirtyDaysAgoInMillis()}}, 
+      __groupInitial(), 
+      __reduce, 
+      function(err, results) {
+        process.emit('chartUsersDone', __finalize(results))
+      }
+    );
+  })    
+}
+
+
+
 
 function __manualTxnConditions(){
   return {
@@ -125,14 +148,15 @@ function __dataNode(data){
   return __sortArrayByDate(__buildArray(data))
 }
 
-function __dojoChartingStructure(manualTxnData, ciData){
+function __dojoChartingStructure(manualTxnData, ciData, userData){
   return {
     startDate:  __formattedDate(__thirtyDaysAgo()),
     endDate:    __formattedDate(__currentTime()),
     viewBy:     "day",
     series: [
       { name: "Manual Txns",        data: manualTxnData },
-      { name: "Company Importers",  data: ciData        }
+      { name: "Company Importers",  data: ciData        },
+      { name: "Users",              data: userData        },      
     ]
   }  
 }

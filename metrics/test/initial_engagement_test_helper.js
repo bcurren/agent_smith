@@ -2,8 +2,11 @@ ie = new InitialEngagement
 
 
 __setup = function(){  
-  db.collection('events', function(err, collection){
-    collection.insert(__fixtureObjects(), function(err, ids){})      
+  sys.log('setup called')
+  db.collection('events', function(err, collection){    
+    collection.insert(__fixtureObjects(), function(err, ids){
+      process.emit('setupDone')      
+    })      
   })  
 }
 
@@ -12,9 +15,14 @@ __setup = function(){
 
 
 __teardown = function(){  
+  sys.log('teardown called')
   db.collection('events', function(err, collection){
-    collection.remove(function(err, collection){})      
+    collection.remove(function(err, collection){
+      sys.log('teardown done')
+    })      
+    db.close()  
   })      
+  
 }
 
 
@@ -64,7 +72,8 @@ function __fixtureObjects(){
     ie_ci,
     ie_ci2,
     ie_ci3,
-    non_ie_ci
+    non_ie_ci,
+    user
   ]
 }
 
@@ -83,7 +92,12 @@ non_txn.subject_type = "User"
 out_of_range_txn = __baseObj(new Date("7-5-2009"), new Date("7-7-2009"), "Txn")
 
 
-ie_ci = __baseObj(new Date("7-5-2010"), new Date("7-7-2010"), "CompanyImporter")
-ie_ci2 = __baseObj(new Date("7-5-2010"), new Date("7-7-2010"), "CompanyImporter")
-ie_ci3 = __baseObj(new Date("7-6-2010"), new Date("7-7-2010"), "CompanyImporter")
+ie_ci     = __baseObj(new Date("7-5-2010"), new Date("7-7-2010"), "CompanyImporter")
+ie_ci2    = __baseObj(new Date("7-5-2010"), new Date("7-7-2010"), "CompanyImporter")
+ie_ci3    = __baseObj(new Date("7-6-2010"), new Date("7-7-2010"), "CompanyImporter")
 non_ie_ci = __baseObj(new Date("7-9-2010"), new Date("7-17-2010"), "CompanyImporter")
+
+
+user      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
+user.manual = null
+
