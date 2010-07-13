@@ -8,7 +8,8 @@ exports.initialEngagementTest = function(assert, beforeExit){
     
     //first test
     ie.chartData(function(txns) { 
-      chartDataResponse = txns.series[0].data 
+      hashManTxnResponse  = __responseHashedByDate(txns.series[0].data )
+      hashCiResponse      = __responseHashedByDate(txns.series[1].data )      
     })  
 
   
@@ -16,11 +17,15 @@ exports.initialEngagementTest = function(assert, beforeExit){
     db.close()
   })    
   beforeExit(function(){            
-    var hashedChartDataResponse = __responseHashedByDate(chartDataResponse)
-    assert.equal(2, hashedChartDataResponse['2010-7-5'], 'unexpected count for: 2010-7-5: ' + hashedChartDataResponse['2010-7-5'] )
-    assert.equal(1, hashedChartDataResponse['2010-7-6'], 'unexpected count for: 2010-7-6: ' + hashedChartDataResponse['2010-7-6'] )    
-    assert.equal(0, hashedChartDataResponse['2010-7-9'], 'unexpected count for: 2010-7-9: ' + hashedChartDataResponse['2010-7-9'] )        
-    assert.equal(undefined, hashedChartDataResponse['2009-7-5'], 'unexpected count for: 2009-7-5: ' + hashedChartDataResponse['2009-7-5'] )    
+    assert.equal(2,         __countOn(0, '2010-7-5'))
+    assert.equal(1,         __countOn(0, '2010-7-6'))    
+    assert.equal(0,         __countOn(0, '2010-7-9'))        
+    assert.equal(undefined, __countOn(0, '2009-7-5'))    
+    assert.equal(2,         __countOn(1, '2010-7-5'))
+    assert.equal(1,         __countOn(1, '2010-7-6'))    
+    assert.equal(0,         __countOn(1, '2010-7-9'))        
+    assert.equal(undefined, __countOn(1, '2009-7-5'))    
+    
   });  
 }
 
@@ -32,7 +37,13 @@ exports.initialEngagementTest = function(assert, beforeExit){
 
 
 
-// PRIVATE
+function __countOn(seriesIndex, date){
+  if (seriesIndex == 0){
+    return hashManTxnResponse[date]  
+  } else if (seriesIndex == 1) {
+    return hashCiResponse[date]      
+  }
+}
 
 
 
