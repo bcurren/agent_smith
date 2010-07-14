@@ -31,6 +31,9 @@ ciFixture = function(userCreatedAt, objCreatedAt){
 }
 
 
+
+
+
 function __objectFixture(objType, userCreatedAt, objCreatedAt){
   returnObj =  {
     "event_name" : "created" , 
@@ -64,24 +67,8 @@ daysAgo = function(nDaysAgo) {
 }
 
 
-setup = function(){
-
-    db.collection('events', function(err, collection){
-      for (var i = 0; i < txnEventDates.length ; i++) {
-        collection.insert([txnFixture(txnEventDates[i][0], txnEventDates[i][1])], function(err, ids){})      
-      }
-  })  
-  request = server.request('GET', '/initial_engagement');
-  request.end();    
-}
 
 
-teardown = function(){
-
-    db.collection('events', function(err, collection){
-      collection.remove(function(err, collection){})      
-    })
-}
 
 
 hashByDate = function(response){

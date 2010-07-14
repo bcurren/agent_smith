@@ -28,7 +28,7 @@ exports.initialEngagementTest = function(assert, beforeExit){
     assert.equal(1,         __countOn(1, '2010-7-6'))    
     assert.equal(0,         __countOn(1, '2010-7-9'))        
     assert.equal(undefined, __countOn(1, '2009-7-5'))   
-    assert.equal(1,         __countOn(2, '2010-7-5'))        
+    assert.equal(4 / 6 * 100.0,         __countOn(2, '2010-7-5'))        
   });  
 }
 

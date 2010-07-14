@@ -73,7 +73,7 @@ function __fixtureObjects(){
     ie_ci2,
     ie_ci3,
     non_ie_ci,
-    user
+    user1,  user2,  user3,  user4, user5, user6
   ]
 }
 
@@ -87,7 +87,7 @@ imported_txn    = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "Txn")
 imported_txn.manual = null
 
 non_txn         = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "Txn")
-non_txn.subject_type = "User"
+non_txn.subject_type = "Whatever"
 
 out_of_range_txn = __baseObj(new Date("7-5-2009"), new Date("7-7-2009"), "Txn")
 
@@ -98,6 +98,16 @@ ie_ci3    = __baseObj(new Date("7-6-2010"), new Date("7-7-2010"), "CompanyImport
 non_ie_ci = __baseObj(new Date("7-9-2010"), new Date("7-17-2010"), "CompanyImporter")
 
 
-user      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
-user.manual = null
+user1      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
+user1.manual = null
+user2      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
+user2.manual = null
+user3      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
+user3.manual = null
+user4      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
+user4.manual = null
+user5      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
+user5.manual = null
+user6      = __baseObj(new Date("7-5-2010"), new Date("7-5-2010"), "User")
+user6.manual = null
 

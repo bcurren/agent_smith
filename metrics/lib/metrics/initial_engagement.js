@@ -1,4 +1,5 @@
 var bm = require('../../lib/base_metric');
+sys = require('sys')
 
 InitialEngagement = function() {};
 
@@ -15,6 +16,13 @@ InitialEngagement.prototype.chartData = function(callback) {
     __chartUserData()
   })  
   process.addListener('chartUsersDone', function(userData){
+    
+    for(var i = 0; i < userData.length; i++) {
+      userData[i][1] = (counterHash[__formattedDate(new Date(userData[i][0]))] / (userData[i][1] ) ) * 100.0
+    }
+    sys.log(sys.inspect(counterHash))        
+    sys.log(sys.inspect(userData))
+    
     callback(
       __dojoChartingStructure(
         manTxnResults,
@@ -36,7 +44,7 @@ function __chartManualTxnData(){
       __groupInitial(), 
       __reduce, 
       function(err, results) {
-        process.emit('manualGroupDone', __finalize(results))
+        process.emit('manualGroupDone', __finalize(results, true))
       }
     );
   })  
@@ -50,7 +58,7 @@ function __chartCompanyImporterData(){
       __groupInitial(), 
       __reduce, 
       function(err, results) {
-        process.emit('ciGroupDone', __finalize(results))
+        process.emit('ciGroupDone', __finalize(results, true))
       }
     );
   })  
@@ -63,8 +71,8 @@ function __chartUserData(){
       {'subject_type': 'User', 'event_name': 'created', 'user_created_at_in_millis': {'$gte': __thirtyDaysAgoInMillis()}}, 
       __groupInitial(), 
       __reduce, 
-      function(err, results) {
-        process.emit('chartUsersDone', __finalize(results))
+      function(err, results) {        
+        process.emit('chartUsersDone', __finalize(results, false))
       }
     );
   })    
@@ -105,8 +113,8 @@ function __reduce(obj, prev){
     prev.count = 1;
 }
 
-function __finalize(records){
-  return __dataNode(__sumUserIdGroupsByDate(records))
+function __finalize(records, count){
+  return __dataNode(__sumUserIdGroupsByDate(records, count))
 }
 
 function __sortArrayByDate(result){
@@ -123,12 +131,20 @@ function __sortArrayByDate(result){
   })
 }
 
-function __sumUserIdGroupsByDate(results){
+counterHash = {}
+function __sumUserIdGroupsByDate(results, count){
   returnHash = {}
   for (var i = 0, len = results.length; i < len; ++i){
     fmtDate = __formattedDate(new Date(results[i].date))
+    if (count){
+      if (counterHash[fmtDate] == null) {
+        counterHash[fmtDate] = results[i].count
+      } else {
+        counterHash[fmtDate] = counterHash[fmtDate] + results[i].count      
+      }
+    }
     if (returnHash[fmtDate] == null) {
-      returnHash[fmtDate] = results[i].count
+      returnHash[fmtDate] = results[i].count      
     } else {
       returnHash[fmtDate] = returnHash[fmtDate] + results[i].count
     }
