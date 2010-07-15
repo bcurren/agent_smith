@@ -2,15 +2,15 @@ var bm = require('../../lib/base_metric'),
 events = require('events')
 
 InitialEngagement = function() {
-  var self = this
-  this.manTxnResults = null,
-  this.ciResults = null,
+  var self = this  
   this.currentTimeInMillis = null,
   this.thirtyDaysAgoInMillis = null,
   this.currentTime = null,
   this.thirtyDaysAgo = null,
   this.eventEmitter = new events.EventEmitter(),
   this.counterHash = {},
+  this.results = {},
+  
   this.__groupManualTxns = function (){
     self.__groupEvents( self.__manualTxnConditions(), 'manualGroupDone' )
   },  
@@ -18,6 +18,7 @@ InitialEngagement = function() {
     self.__groupEvents( self.__companyImporterConditions(), 'ciGroupDone' )    
   },
   this.__chartUserData = function(){ // why can't this be factored out?  Causes error in the division calculation
+    // self.__groupEvents( self.__userConditions(), 'userGroupDone' )    
     db.collection('events', function(err, collection){    
       collection.group(
         ["user_id"], 
@@ -25,7 +26,7 @@ InitialEngagement = function() {
         self.__groupInitial(), 
         self.__reduce, 
         function(err, results) {        
-          self.eventEmitter.emit('chartUsersDone', self.__finalize(results, false))
+          self.eventEmitter.emit('userGroupDone', self.__finalize(results, false))
         }
       );
     })    
@@ -74,7 +75,7 @@ InitialEngagement = function() {
     prev.date           = obj.user_created_at;
     prev.txn_created    = obj.created_at;
     var difference      = Date.parse(obj.created_at) - Date.parse(obj.user_created_at);  
-    prev.days = difference;
+    prev.days           = difference
     if(difference <=  3*24*60*60*1000)
       prev.count = 1;
   },
@@ -161,7 +162,13 @@ InitialEngagement = function() {
       self.thirtyDaysAgo = new Date(self.__thirtyDaysAgoInMillis())
     }
     return self.thirtyDaysAgo
-  } 
+  },
+  this.__divideUserCountsByTotal = function(){
+    var userResults = self.results['userResults']
+    for(var i = 0; i < self.results['userResults'].length; i++) {
+      userResults[i][1] = (self.counterHash[self.__formattedDate(new Date(userResults[i][0]))] / (userResults[i][1] ) ) * 100.0      
+    }    
+  }
 };
 
 InitialEngagement.prototype = new bm.BaseMetric;
@@ -169,29 +176,36 @@ InitialEngagement.prototype.constructor = InitialEngagement;
 InitialEngagement.prototype.chartData = function(callback) {
   var self = this
   self.eventEmitter.addListener('manualGroupDone', function (manualTxnData){
-    self.manTxnResults = manualTxnData
-    self.__chartCompanyImporterData()
+    self.results['manTxnResults'] = manualTxnData    
     self.eventEmitter.removeAllListeners('manualGroupDone')
+    self.eventEmitter.emit('callBack')        
   })
   self.eventEmitter.addListener('ciGroupDone', function(ciData){      
-    self.ciResults = ciData    
-    self.__chartUserData()
+    self.results['ciResults'] = ciData        
     self.eventEmitter.removeAllListeners('ciGroupDone')    
+    self.eventEmitter.emit('callBack')        
   })  
-  self.eventEmitter.addListener('chartUsersDone', function(userData){
-    for(var i = 0; i < userData.length; i++) {
-      userData[i][1] = (self.counterHash[self.__formattedDate(new Date(userData[i][0]))] / (userData[i][1] ) ) * 100.0
-      self.eventEmitter.removeAllListeners('chartUsersDone')      
+  self.eventEmitter.addListener('userGroupDone', function(userData){
+    self.results['userResults'] = userData    
+    self.eventEmitter.removeAllListeners('userGroupDone')                         
+    self.eventEmitter.emit('callBack')    
+  })
+  self.eventEmitter.addListener('callBack', function(){
+    if (self.results['manTxnResults'] && self.results['ciResults'] && self.results['userResults']){      
+      self.__divideUserCountsByTotal() 
+      callback(
+        self.__dojoChartingStructure(
+          self.results['manTxnResults'],
+          self.results['ciResults'],
+          self.results['userResults']
+        )
+      )      
+      self.eventEmitter.removeAllListeners('callBack')      
     }    
-    callback(
-      self.__dojoChartingStructure(
-        self.manTxnResults,
-        self.ciResults,
-        userData
-      )
-    )
   })
   self.__groupManualTxns()
+  self.__chartCompanyImporterData()  
+  self.__chartUserData()  
 }
 
 
