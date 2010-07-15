@@ -3,43 +3,23 @@ events = require('events')
 
 InitialEngagement = function() {
   var self = this
-  var thirtyDaysAgoInMillis = null  //todo: var this
-  var currentTimeInMillis = null  
-  var currentTime = null  
-  var thirtyDaysAgo = null  
+  var thirtyDaysAgoInMillis,
+  currentTimeInMillis,
+  currentTime,
+  thirtyDaysAgo
   this.eventEmitter = new events.EventEmitter(),
   this.counterHash = {},
-  this.__chartManualTxnData = function (){  
-    db.collection('events', function(err, collection){    
-      collection.group(
-        ["user_id"], 
-        self.__manualTxnConditions(), 
-        self.__groupInitial(), 
-        self.__reduce, 
-        function(err, results) {
-          self.eventEmitter.emit('manualGroupDone', self.__finalize(results, true))
-        }
-      );
-    })  
+  this.__groupManualTxns = function (){
+    return this.__groupEvents( this.__manualTxnConditions(), 'manualGroupDone' )
   },  
-  this.__chartCompanyImporterData = function(){  
-    db.collection('events', function(err, collection){    
-      collection.group(
-        ["user_id"], 
-        self.__companyImporterConditions(), 
-        self.__groupInitial(), 
-        self.__reduce, 
-        function(err, results) {
-          self.eventEmitter.emit('ciGroupDone', self.__finalize(results, true))
-        }
-      );
-    })  
+  this.__chartCompanyImporterData = function(){
+    return this.__groupEvents( this.__companyImporterConditions(), 'ciGroupDone' )    
   },
   this.__chartUserData = function(){
     db.collection('events', function(err, collection){    
       collection.group(
         ["user_id"], 
-        {'subject_type': 'User', 'event_name': 'created', 'user_created_at_in_millis': {'$gte': self.__thirtyDaysAgoInMillis()}}, 
+        self.__userConditions(), 
         self.__groupInitial(), 
         self.__reduce, 
         function(err, results) {        
@@ -48,6 +28,19 @@ InitialEngagement = function() {
       );
     })    
   },
+  this.__groupEvents = function(conditions, doneEvent){
+    db.collection('events', function(err, collection){    
+      collection.group(
+        ["user_id"], 
+        conditions, 
+        self.__groupInitial(), 
+        self.__reduce, 
+        function(err, results) {
+          self.eventEmitter.emit(doneEvent, self.__finalize(results, true))
+        }
+      );
+    })    
+  }
   this.__manualTxnConditions = function(){
     return {
       'manual': 'true', 
@@ -62,6 +55,13 @@ InitialEngagement = function() {
       'event_name': 'created', 
       'user_created_at_in_millis': {'$gte': self.__thirtyDaysAgoInMillis()}
     }  
+  },
+  this.__userConditions = function(){
+    return {
+      'subject_type': 'User', 
+      'event_name': 'created', 
+      'user_created_at_in_millis': { '$gte': self.__thirtyDaysAgoInMillis() }
+    }    
   },
   this.__groupInitial = function(){
     return {"date": "", "count":0}
@@ -190,7 +190,7 @@ InitialEngagement.prototype.chartData = function(callback) {
       )
     )
   })
-  self.__chartManualTxnData()
+  self.__groupManualTxns()
 }
 
 
