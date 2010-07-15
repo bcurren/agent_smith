@@ -3,19 +3,21 @@ events = require('events')
 
 InitialEngagement = function() {
   var self = this
-  var thirtyDaysAgoInMillis,
-  currentTimeInMillis,
-  currentTime,
-  thirtyDaysAgo
+  this.manTxnResults = null,
+  this.ciResults = null,
+  this.currentTimeInMillis = null,
+  this.thirtyDaysAgoInMillis = null,
+  this.currentTime = null,
+  this.thirtyDaysAgo = null,
   this.eventEmitter = new events.EventEmitter(),
   this.counterHash = {},
   this.__groupManualTxns = function (){
-    return this.__groupEvents( this.__manualTxnConditions(), 'manualGroupDone' )
+    self.__groupEvents( self.__manualTxnConditions(), 'manualGroupDone' )
   },  
   this.__chartCompanyImporterData = function(){
-    return this.__groupEvents( this.__companyImporterConditions(), 'ciGroupDone' )    
+    self.__groupEvents( self.__companyImporterConditions(), 'ciGroupDone' )    
   },
-  this.__chartUserData = function(){
+  this.__chartUserData = function(){ // why can't this be factored out?  Causes error in the division calculation
     db.collection('events', function(err, collection){    
       collection.group(
         ["user_id"], 
@@ -137,28 +139,28 @@ InitialEngagement = function() {
     return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate()
   },   
   this.__thirtyDaysAgoInMillis = function(){
-    if (!thirtyDaysAgoInMillis){
-      thirtyDaysAgoInMillis =  self.__currentTimeInMillis() - 30 * 24 * 60 * 60 * 1000
+    if (!self.thirtyDaysAgoInMillis){
+      self.thirtyDaysAgoInMillis =  self.__currentTimeInMillis() - 30 * 24 * 60 * 60 * 1000
     }
-    return thirtyDaysAgoInMillis
+    return self.thirtyDaysAgoInMillis
   },
   this.__currentTimeInMillis = function(){
-    if (!currentTimeInMillis){
-      currentTimeInMillis = self.__currentTime().getTime() 
+    if (!self.currentTimeInMillis){
+      self.currentTimeInMillis = self.__currentTime().getTime() 
     }
-    return currentTimeInMillis
+    return self.currentTimeInMillis
   },
   this.__currentTime = function(){
-    if (!currentTime){
-      currentTime = new Date()
+    if (!self.currentTime){
+      self.currentTime = new Date()
     }
-    return currentTime
+    return self.currentTime
   },
   this.__thirtyDaysAgo = function(){
-    if (!thirtyDaysAgo){
-      thirtyDaysAgo = new Date(self.__thirtyDaysAgoInMillis())
+    if (!self.thirtyDaysAgo){
+      self.thirtyDaysAgo = new Date(self.__thirtyDaysAgoInMillis())
     }
-    return thirtyDaysAgo
+    return self.thirtyDaysAgo
   } 
 };
 
@@ -166,14 +168,13 @@ InitialEngagement.prototype = new bm.BaseMetric;
 InitialEngagement.prototype.constructor = InitialEngagement;
 InitialEngagement.prototype.chartData = function(callback) {
   var self = this
-  var manTxnResults, ciResults
   self.eventEmitter.addListener('manualGroupDone', function (manualTxnData){
-    manTxnResults = manualTxnData
+    self.manTxnResults = manualTxnData
     self.__chartCompanyImporterData()
     self.eventEmitter.removeAllListeners('manualGroupDone')
   })
   self.eventEmitter.addListener('ciGroupDone', function(ciData){      
-    ciResults = ciData    
+    self.ciResults = ciData    
     self.__chartUserData()
     self.eventEmitter.removeAllListeners('ciGroupDone')    
   })  
@@ -184,8 +185,8 @@ InitialEngagement.prototype.chartData = function(callback) {
     }    
     callback(
       self.__dojoChartingStructure(
-        manTxnResults,
-        ciResults,
+        self.manTxnResults,
+        self.ciResults,
         userData
       )
     )
