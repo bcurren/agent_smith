@@ -129,7 +129,7 @@ InitialEngagement = function() {
       series: [
         { name: "Manual Txns",        data: manualTxnData },
         { name: "Company Importers",  data: ciData        },
-        { name: "Users",              data: userData        },      
+        { name: "% Engaged Users",              data: userData        },      
       ]
     }  
   },
