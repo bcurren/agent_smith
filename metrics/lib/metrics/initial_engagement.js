@@ -1,7 +1,9 @@
 var bm = require('../../lib/base_metric'),
-events = require('events')
+events = require('events'),
+sys = require('sys')
 
 InitialEngagement = function() {
+  bm.BaseMetric.call(this)
   var self = this  
   this.currentTimeInMillis = null,
   this.thirtyDaysAgoInMillis = null,
@@ -143,9 +145,10 @@ InitialEngagement = function() {
     }    
   }
 };
+sys.inherits(InitialEngagement, bm.BaseMetric)
 
-InitialEngagement.prototype = new bm.BaseMetric;
-InitialEngagement.prototype.constructor = InitialEngagement;
+
+
 InitialEngagement.prototype.chartData = function(callback) {
   var self = this
   self.eventEmitter.addListener('manualGroupDone', function (manualTxnData){
