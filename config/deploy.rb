@@ -25,9 +25,7 @@ namespace :deploy do
   end
 
   task :pull_submodules, :roles => :app do    
-    run "cd #{latest_release}/event_server/deps/node-mongodb-native && git submodule update --init"    
-    run "cd #{latest_release}/metrics/deps/express && git submodule update --init"    
-    run "cd #{latest_release}/metrics/deps/node-mongodb-native && git submodule update --init"        
+    run "cd #{latest_release} && git submodule update --init --recursive"
   end
 end
 

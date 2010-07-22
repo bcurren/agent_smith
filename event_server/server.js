@@ -1,5 +1,5 @@
 require.paths.unshift(__dirname + '/lib');
-require.paths.unshift(__dirname);
+require.paths.unshift(__dirname + '/..');
 
 var sys = require('sys'),
   http = require('http'),
