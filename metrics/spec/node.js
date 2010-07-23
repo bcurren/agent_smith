@@ -1,7 +1,7 @@
 require.paths.unshift('spec', './spec/lib', 'lib')
 require.paths.unshift(__dirname + '/../lib');
 require.paths.unshift(__dirname + '/../lib/metrics');
-require.paths.unshift(__dirname + '/..');
+require.paths.unshift(__dirname + '/../..');
 
 require('jspec');
 require('unit/spec.helper');
