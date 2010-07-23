@@ -2,14 +2,17 @@ set :application, "agent_smith"
 set :user, "release"
 
 set :scm, :git
+set :deploy_via, :remote_cache
+set :git_shallow_clone, 1
+# set :git_enable_submodules, 1
+default_run_options[:pty] = true
+
 set :use_sudo, false
 set :repository, "git@github.com:outright/agent_smith.git"
 
-set :agent_smith_host, "ec2-184-73-153-93.compute-1.amazonaws.com"
-
-role :web, agent_smith_host
-role :app, agent_smith_host
-role :db,  agent_smith_host
+role :web, "ec2-184-73-153-93.compute-1.amazonaws.com"
+role :app, "ec2-184-73-153-93.compute-1.amazonaws.com"
+# role :db,  "ec2-184-73-153-93.compute-1.amazonaws.com"
 
 depend :remote, :command, 'git'
 
@@ -23,8 +26,8 @@ namespace :deploy do
     run "node #{latest_release}/event_server/server.js"
     run "node #{latest_release}/metrics/server.js"
   end
-
-  task :pull_submodules, :roles => :app do    
+  
+  task :pull_submodules, :roles => :app do
     run "cd #{latest_release} && git submodule update --init --recursive"
   end
 end
