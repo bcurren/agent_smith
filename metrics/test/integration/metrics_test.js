@@ -3,7 +3,7 @@
 
 metricsTestHelper = require('./metrics_test_helper')
 
-mongo = require('../../deps/node-mongodb-native/lib/mongodb')
+mongo = require('../../../deps/node-mongodb-native/lib/mongodb')
 db = new mongo.Db('agent_smith', new mongo.Server('localhost', 27017, {}), {});
 
 
