@@ -1,3 +1,7 @@
 1. clone the repo
 2. git submodule update --init --recurive
 3. cd deps/express && make install-support
+
+# Not yet:)
+# 1. Install npm: curl http://npmjs.org/install.sh | sudo sh
+# 2. Install submodules: sh config/install_modules.sh
