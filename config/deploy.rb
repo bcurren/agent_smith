@@ -12,7 +12,6 @@ set :repository, "git@github.com:outright/agent_smith.git"
 
 role :web, "ec2-184-73-153-93.compute-1.amazonaws.com"
 role :app, "ec2-184-73-153-93.compute-1.amazonaws.com"
-# role :db,  "ec2-184-73-153-93.compute-1.amazonaws.com"
 
 depend :remote, :command, 'git'
 
@@ -23,14 +22,20 @@ default_run_options[:pty] = true
 
 namespace :deploy do
   task :restart, :roles => :app, :except => { :no_release => true } do
-    run "node #{latest_release}/event_server/server.js"
-    run "node #{latest_release}/metrics/server.js"
+    sudo "killall node"
+    sudo "node #{latest_release}/event_server/server.js"
+    sudo "node #{latest_release}/metrics/server.js"
   end
   
   task :pull_submodules, :roles => :app do
-    run "cd #{latest_release} && git submodule update --init --recursive"
+    run "cd #{latest_release} && git submodule --quiet update --init --recursive"
+  end
+  
+  task :config_symlink do
+    run "ln -nfs #{shared_path}/metrics/config/app.json #{latest_release}/metrics/config/app.json"
+    run "ln -nfs #{shared_path}/event_server/config/app.json #{latest_release}/event_server/config/app.json"
   end
 end
 
-
 after 'deploy:update_code', 'deploy:pull_submodules'
+after 'deploy:update_code', 'deploy:config_symlink'
