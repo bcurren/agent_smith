@@ -1,6 +1,5 @@
 {
   "database_name" : "agent_smith",
   "mongo_server"  : "localhost",
-  "mongo_port"    : 27017,
-  "listen_port"   : 8000
+  "mongo_port"    : 27017
 }
