@@ -38,7 +38,7 @@ db.open(function(p_db) {
   app.get('/', function(req, res, params){
     res.render('index.ejs', {
       locals: {
-        report: params["report_name"]
+        report: req.params.get.report_name
       }
     });
   });
@@ -48,7 +48,7 @@ db.open(function(p_db) {
     var metric = new mc.Metric;
     res.contentType('application/json');
     metric.chartData(function(response){
-      res.respond(200, JSON.encode(response));
+      res.send(response);
     })
   });
   
