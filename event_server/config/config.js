@@ -1,5 +1,5 @@
 module.exports = {
-    port: 80,
+    port: 443,
     user: "nobody",
     env: "production"
 };
