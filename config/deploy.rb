@@ -22,9 +22,8 @@ default_run_options[:pty] = true
 
 namespace :deploy do
   task :restart, :roles => :app, :except => { :no_release => true } do
-    sudo "killall node"
-    sudo "node #{latest_release}/event_server/server.js"
-    sudo "node #{latest_release}/metrics/server.js"
+    # sudo "killall node"
+    sudo "/etc/init.d/event_server start"
   end
   
   task :pull_submodules, :roles => :app do
