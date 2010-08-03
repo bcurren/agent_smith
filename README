@@ -1,5 +1,5 @@
 1. clone the repo
-2. git submodule update --init --recurive
+2. git submodule update --init --recursive
 3. cd deps/express && make install-support
 4. install spark by cloning http://github.com/senchalabs/spark.git
 5. start the event_server by cd event_server; spark -p 8000
