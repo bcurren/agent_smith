@@ -1,17 +1,27 @@
 <div id="simplechart" style="width: 1900px; height: 750px;"></div>
 <div id="legend1"></div>
 
+<p>Some available reports:</p>
+    <ul>
+      <li><a href="?report_name=initial_engagement">Initial Engagement Report</a></li>
+      <li><a href="?report_name=fi_search">FI Search Summary</a></li>
+      <li><a href="?report_name=fi_search_fails">Common FI Search Failures</a></li>
+      <li><a href="?report_name=fi_search_retries">Common FI Search Retries</a></li>
+
+    </ul>
+
+
 <script type="text/javascript" charset="utf-8">
   dojo.require("outright.Application");
   dojo.require("outright.charting.Chart2D");
   dojo.require("dijit.Dialog"); 
 
-  dojo.addOnLoad(function() { 
+  dojo.addOnLoad(function() {
     dojo.xhrGet({
-      url: "/<%- report %>",
+      url: "/<%- report %>.json",
       handleAs: "json",
       load: function(data) {
-        new outright.charting.Chart2D("simplechart", "legend1", data, 
+        new outright.charting.Chart2D("simplechart", "legend1", data,
         [
           {
             plot: "users",
@@ -27,7 +37,7 @@
             plot: "users",
             type: "Lines",
             seriesIndex: 2
-          }          
+          }
         ]);
       },
       error: function(error) {
