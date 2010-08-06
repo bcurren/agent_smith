@@ -4,7 +4,7 @@
 metricsTestHelper = require('./metrics_test_helper')
 
 mongo = require('../../../deps/node-mongodb-native/lib/mongodb')
-db = new mongo.Db('agent_smith', new mongo.Server('localhost', 27017, {}), {});
+db = new mongo.Db('agent_smith_test', new mongo.Server('localhost', 27017, {}), {});
 
 
 process.addListener('setupDone', function(){
@@ -67,7 +67,7 @@ function assertDateHasCount(body, series, date, count){
 }
 
 function inRequestContext(callback){
-  request = server.request('GET', '/initial_engagement');
+  request = server.request('GET', '/initial_engagement.json');
   request.end();    
   request.addListener('response', function (response) {
     response.setEncoding('utf8');
