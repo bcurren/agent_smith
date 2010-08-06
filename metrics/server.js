@@ -52,7 +52,8 @@ db.open(function(p_db) {
       res.send(response);
     })
   });
-  
+
+
   sys.log("Started server with config: ");
   sys.puts(configJSON);
   app.listen(config.monitor_port)
