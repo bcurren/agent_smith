@@ -8,7 +8,7 @@
 
   dojo.addOnLoad(function() { 
     dojo.xhrGet({
-      url: "/<%- report %>",
+      url: "/<%- report %>.json",
       handleAs: "json",
       load: function(data) {
         new outright.charting.Chart2D("simplechart", "legend1", data, 

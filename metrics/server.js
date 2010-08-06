@@ -29,6 +29,7 @@ db.open(function(p_db) {
   app.configure(function(){
     app.set('root', __dirname);
     app.set('db', db);
+    app.use(connect.staticProvider(__dirname + '/public'))
 
     for(var i in config) {
       app.set(i, config[i]);
@@ -38,12 +39,12 @@ db.open(function(p_db) {
   app.get('/', function(req, res, params){
     res.render('index.ejs', {
       locals: {
-        report: req.params.get.report_name
+        report: req.params.get.report_name || 'initial_engagement'
       }
     });
   });
 
-  app.get('/:report_name', function(req, res, params){
+  app.get('/:report_name.json', function(req, res, params){
     var mc = require(params['report_name']);
     var metric = new mc.Metric;
     res.contentType('application/json');
