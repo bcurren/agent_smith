@@ -36,21 +36,25 @@ db.open(function(p_db) {
     }
   });
 
+  app.get('/:report_name.json', function(req, res, params){
+    try {
+      var mc = require(params['report_name']);
+      var metric = new mc.Metric;
+      res.contentType('application/json');
+      metric.chartData(function(response){
+        res.send(response);
+      })
+    } catch(e) {
+      res.send("Error: " + e.message);
+    }
+  });
+  
   app.get('/', function(req, res, params){
     res.render('index.ejs', {
       locals: {
         report: req.params.get.report_name || 'initial_engagement'
       }
     });
-  });
-
-  app.get('/:report_name.json', function(req, res, params){
-    var mc = require(params['report_name']);
-    var metric = new mc.Metric;
-    res.contentType('application/json');
-    metric.chartData(function(response){
-      res.send(response);
-    })
   });
 
 
