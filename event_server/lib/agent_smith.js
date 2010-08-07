@@ -22,7 +22,9 @@ AgentSmith.prototype = {
     this.writePixel(res);
     sys.puts(req.url);
     var env = this.splitQuery(req.url.split('?')[1]);
-    env.timestamp = new Date();
+    var now = new Date();
+    env.date = now.getMonth() + "/" + now.getDate() + "/" + now.getFullYear();
+    env.timestamp = now.getTime();
     env.user_created_at_in_millis = new Date(env.user_created_at).getTime()
     this.collection.insertAll([env]);
   },
