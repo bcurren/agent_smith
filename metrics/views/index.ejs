@@ -1,7 +1,6 @@
-<div id="simplechart"></div>
+<div id="simplechart" style="width: 1900px; height: 750px;"></div>
 <div id="legend1"></div>
 
-<div id="chart-data"></div>
 <p>Some available reports:</p>
     <ul>
       <li><a href="?report_name=initial_engagement">Initial Engagement Report</a></li>
@@ -22,20 +21,15 @@
       url: "/<%- report %>.json",
       handleAs: "json",
       load: function(data) {
-        if (typeof data == "object") {
-          dojo.style("chart-data", { width: 1900, height: 750 });
-          var series = [];
-          for (var i = 0; i < data.series.length; i++) {
-            series[i] = {
-              plot: data.series[i].name, 
-              type: "Lines", 
-              seriesIndex: i, 
-            }
-          }
-          new outright.charting.Chart2D("simplechart", "legend1", data, series);
-        } else {
-          dojo.byId("chart-data").innerHTML = data;
+        var series = [];
+        for (var i = 0; i < data.series.length; i++) {
+          series.push({
+            plot: "users", 
+            type: "Lines", 
+            seriesIndex: i, 
+          });
         }
+        new outright.charting.Chart2D("simplechart", "legend1", data, series);
       },
       error: function(error) {
         var dialog = new dijit.Dialog({
