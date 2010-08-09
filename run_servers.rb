@@ -2,7 +2,7 @@
 wait_prog          = `find /usr/lib/ruby/user-gems/1.8/gems -name fsevent_sleep`.chomp
 spark              = `which spark`.chomp
 spark = ENV['SPARK_BIN'] if spark.empty?
-unless File.exists?(spark)
+unless spark && File.exists?(spark)
   STDERR.print "Not found: '#{spark}'\nYou need to install spark and have its `spark` binary in the path.  \nThat, or point to it in the SPARK_BIN environment variable (currently #{ENV['SPARK_BIN']})\n" 
   exit
 end
