@@ -49,7 +49,10 @@ FISearchRetry = function() {
     }
     data += "</table>";
     
-    return new String(data);
+    return {
+      displayType: "html", 
+      html: data
+    };
   }
 }
 
