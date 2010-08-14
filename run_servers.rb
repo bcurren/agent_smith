@@ -11,6 +11,20 @@ end
 
 killing = 0
 
+started_mongo = false
+STDOUT.print "Checking for running Mongo DB..."
+unless system( "echo hi | mongo 2>/dev/null 1>&2" )
+  puts "not found."
+  puts "Mongo DB is not running.  Trying to start...\n\n# mongod --fork --logpath ~/mongo.log"
+  unless system( "mongod --fork --logpath ~/mongo.log" ) 
+    puts "fatal: Failed to start Mongo DB."
+    exit
+  end
+  started_mongo = true
+else
+  puts "found."
+end
+
 while killing < 2
   puts( "Starting event server...")
   event_server_pid = Kernel.fork {
@@ -37,12 +51,16 @@ while killing < 2
       exit
     end
   end
-  if killing > 0
+  if killing == 1
     puts "\n\nGot interrupt, forcing restart.  Again to exit.\n\n"
   else
-    puts( "Stopping servers...")
+    puts( "Stopping event server...")
   end
   Process.kill( "INT", event_server_pid);
   Process.waitpid(0);
 end
-puts 
+if started_mongo
+  puts "Stopping Mongo DB..."
+  system("killall mongod")
+end
+puts
