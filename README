@@ -38,7 +38,7 @@
 - You can also use the run_servers.rb script:
 
   sudo gem install autotest-fsevent
-  ./run_servers.rb
+  ./run_servers
 
 # Not yet:)
 # 1. Install npm: curl http://npmjs.org/install.sh | sudo sh
