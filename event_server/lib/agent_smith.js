@@ -34,7 +34,7 @@ AgentSmith.prototype = {
       sys.debug(queryData)
       var env = self.splitQuery(queryData);
       var now = new Date();
-      env.date = now.getMonth() + "/" + now.getDate() + "/" + now.getFullYear();
+      env.date = ( now.getMonth() + 1 ) + "/" + now.getDate() + "/" + now.getFullYear();
       env.timestamp = now.getTime();
       env.user_created_at_in_millis = new Date(env.user_created_at).getTime()
       self.collection.insertAll([env]);
