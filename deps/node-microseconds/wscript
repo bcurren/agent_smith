@@ -1,0 +1,37 @@
+import Options, glob
+from os.path import join, dirname, abspath, exists
+from shutil import copy, rmtree
+from os import unlink
+import sys, os
+
+srcdir = "."
+blddir = "build"
+VERSION = "0.0.1"
+
+def set_options(opt):
+  opt.tool_options("compiler_cxx")
+  opt.tool_options("compiler_cc")
+
+def configure(conf):
+  conf.check_tool("compiler_cxx")
+  conf.check_tool("compiler_cc")
+  conf.check_tool("node_addon")
+
+def clean(ctx): 
+  if exists("lib/node-microseconds.node"): unlink("lib/node-microseconds.node")
+  if exists("build"): rmtree("build")
+
+def build(bld):
+  # build node-avro
+  node_avro = bld.new_task_gen("cxx", "shlib", "node_addon")
+  node_avro.source = bld.glob("binding.cc")
+  node_avro.name = "node-microseconds"
+  node_avro.target = "node-microseconds"
+  bld.add_post_fun(copynode)
+  
+def copynode(ctx):
+  if exists('build/default/node-microseconds.node'):
+    copy('build/default/node-microseconds.node','lib/node-microseconds.node')
+
+def test(ctx): 
+  os.system("node test/sanity.js")
