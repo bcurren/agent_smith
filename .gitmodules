@@ -13,9 +13,6 @@
 [submodule "deps/express"]
 	path = deps/express
 	url = git://github.com/visionmedia/express.git
-[submodule "deps/node-microseconds"]
-	path = deps/node-microseconds
-	url = http://github.com/tmpvar/node-microseconds.git
 [submodule "deps/node-websocket-server"]
 	path = deps/node-websocket-server
 	url = http://github.com/mnutt/node-websocket-server.git
