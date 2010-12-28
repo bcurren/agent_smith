@@ -1,10 +1,44 @@
-1. clone the repo
-2. git submodule update --init --recursive
-3. sudo mkdir -p /usr/local/share/man/man.1
-4. mkdir ~/.node_libraries
-5. cd deps/express && sudo make install-support
-6. install spark by cloning http://github.com/senchalabs/spark.git
-7. start the event_server by cd event_server; spark -p 8000
+- Install mongodb binary package from mongodb.org
+
+   Use the 32-bit package for Leopard, or 64-bit for Snow Leopard
+ 
+   start it from your login scripts with mongod --fork ~/mongo.log if you like.
+   Be sure to create /data/db for it, or otherwise configure it with a data directory.
+
+- Install nodejs from nodejs.org
+  
+  Compile is slow but you can do some of this other stuff while it's working
+
+- clone the repo and init submodules
+  
+  git clone <project clone url>
+  git submodule update --init --recursive
+
+- On Snow Leopard only:
+
+  sudo ln -s /usr/share /usr/local/share
+
+  Can use mkdir instead if desired:
+    sudo mkdir -p /usr/local/share/man/man.1
+  (but no guarantees about being able to read the man pages in this case)
+
+- Give Express a place to store its libs for nodejs, and install it
+
+  mkdir ~/.node_libraries
+  cd deps/express && sudo make install-support
+
+  (requires node compile and install to have finished)
+
+- Install spark by cloning http://github.com/senchalabs/spark.git
+
+- Start the event_server:
+
+  cd event_server; spark -p 8000
+
+- You can also use the run_servers.rb script:
+
+  sudo gem install autotest-fsevent
+  ./run_servers
 
 # Not yet:)
 # 1. Install npm: curl http://npmjs.org/install.sh | sudo sh

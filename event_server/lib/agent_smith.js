@@ -20,13 +20,25 @@ AgentSmith.prototype = {
   
   serveRequest: function(req, res) {
     this.writePixel(res);
-    sys.puts(req.url);
-    var env = this.splitQuery(req.url.split('?')[1]);
-    var now = new Date();
-    env.date = now.getMonth() + "/" + now.getDate() + "/" + now.getFullYear();
-    env.timestamp = now.getTime();
-    env.user_created_at_in_millis = new Date(env.user_created_at).getTime()
-    this.collection.insertAll([env]);
+    var self = this
+    var postData = ""
+    req.addListener('data', function(chunk){
+      postData += chunk
+    })
+    req.addListener('end', function(){
+      sys.puts(req.url);
+      urlData = req.url.split('?')[1]
+      var queryData = [urlData, postData].filter(function(ele){ return (ele !== "") }).join('&')
+      sys.debug(urlData)
+      sys.debug(postData)
+      sys.debug(queryData)
+      var env = self.splitQuery(queryData);
+      var now = new Date();
+      env.date = ( now.getMonth() + 1 ) + "/" + now.getDate() + "/" + now.getFullYear();
+      env.timestamp = now.getTime();
+      env.user_created_at_in_millis = new Date(env.user_created_at).getTime()
+      self.collection.insertAll([env]);
+    })
   },
   
   handleError: function(req, res, e) {
